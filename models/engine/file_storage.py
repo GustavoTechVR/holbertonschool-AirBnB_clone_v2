@@ -1,6 +1,5 @@
 #!/usr/bin/python3
-""" FileStorage class
-"""
+"""Este archivo crea una clase FileStorage para el AirBnB"""
 import json
 from models.base_model import BaseModel
 from models.user import User
@@ -9,56 +8,73 @@ from models.city import City
 from models.amenity import Amenity
 from models.place import Place
 from models.review import Review
+import shlex
 
 
 class FileStorage:
-    """ Class for serializing and deserializing instances to/from JSON file
+    """Esta clase serializa instancias a un archivo JSON y
+   deserializa un archivo JSON a instancias
+   Atributos:
+       __file_path: ruta al archivo JSON
+       __objects: objetos que se almacenarán
     """
     __file_path = "file.json"
     __objects = {}
 
     def all(self, cls=None):
-        """ Returns a dictionary of all objects
+        """retorna un dict
+        Return:
+            retorna un dict of __object
         """
-        if cls is None:
-            return self.__objects
+        dic = {}
+        if cls:
+            dictionary = self.__objects
+            for key in dictionary:
+                partition = key.replace('.', ' ')
+                partition = shlex.split(partition)
+                if (partition[0] == cls.__name__):
+                    dic[key] = self.__objects[key]
+            return (dic)
         else:
-            cls_objects = {}
-            for obj_id, obj in self.__objects.items():
-                if isinstance(obj, cls):
-                    cls_objects[obj_id] = obj
-            return cls_objects
+            return self.__objects
 
     def new(self, obj):
-        """ Adds a new object to the dictionary
+        """sets __object obj
+        Args:
+            obj: objeto dado
         """
-        key = obj.__class__.__name__ + "." + obj.id
-        self.__objects[key] = obj
+        if obj:
+            key = "{}.{}".format(type(obj).__name__, obj.id)
+            self.__objects[key] = obj
 
     def save(self):
-        """ Serializes __objects to JSON file
+        """serializa la ruta del archivo a la ruta del archivo JSON
         """
-        with open(self.__file_path, "w", encoding="utf-8") as f:
-            obj_dict = {key: obj.to_dict() for key, obj in self.__objects.items()}
-            json.dump(obj_dict, f)
+        my_dict = {}
+        for key, value in self.__objects.items():
+            my_dict[key] = value.to_dict()
+        with open(self.__file_path, 'w', encoding="UTF-8") as f:
+            json.dump(my_dict, f)
 
     def reload(self):
-        """ Deserializes the JSON file to __objects
+        """serializa la ruta del archivo a la ruta del archivo JSON
         """
         try:
-            with open(self.__file_path, "r", encoding="utf-8") as f:
-                obj_dict = json.load(f)
-            for key, value in obj_dict.items():
-                cls_name, obj_id = key.split(".")
-                cls = globals()[cls_name]
-                self.__objects[key] = cls(**value)
+            with open(self.__file_path, 'r', encoding="UTF-8") as f:
+                for key, value in (json.load(f)).items():
+                    value = eval(value["__class__"])(**value)
+                    self.__objects[key] = value
         except FileNotFoundError:
             pass
 
     def delete(self, obj=None):
-        """ Deletes an object from __objects if it exists
+        """ borra el elemento existente
         """
-        if obj is not None:
-            key = obj.__class__.__name__ + "." + obj.id
-            if key in self.__objects:
-                del self.__objects[key]
+        if obj:
+            key = "{}.{}".format(type(obj).__name__, obj.id)
+            del self.__objects[key]
+
+    def close(self):
+        """ llama reload()
+        """
+        self.reload()
