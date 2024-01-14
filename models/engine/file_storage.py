@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""Este archivo crea una clase FileStorage para el AirBnB"""
+"""This module defines a class to manage file storage for hbnb clone"""
 import json
 from models.base_model import BaseModel
 from models.user import User
@@ -68,8 +68,7 @@ class FileStorage:
             pass
 
     def delete(self, obj=None):
-        """ borra el elemento existente
-        """
+        """ borra el elemento existente"""
         if obj:
             key = "{}.{}".format(type(obj).__name__, obj.id)
             del self.__objects[key]
