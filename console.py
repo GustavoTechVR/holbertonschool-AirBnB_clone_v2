@@ -114,25 +114,46 @@ class HBNBCommand(cmd.Cmd):
         pass
 
     def do_create(self, args):
-        """ Create an object of any class"""
+        """ Create an object of any class with parameters"""
         try:
             if not args:
-                raise SyntaxError()
+                raise SyntaxError("** class name missing **")
             arg_list = args.split(" ")
-            kw = {}
+            if arg_list[0] not in HBNBCommand.classes:
+                raise NameError("** class doesn't exist **")
+
+            new_instance = HBNBCommand.classes[arg_list[0]]()
             for arg in arg_list[1:]:
-                arg_splited = arg.split("=")
-                arg_splited[1] = eval(arg_splited[1])
-                if type(arg_splited[1]) is str:
-                    arg_splited[1] = arg_splited[1].replace("_", " ").replace('"', '\\"')
-                kw[arg_splited[0]] = arg_splited[1]
-        except SyntaxError:
-            print("** class name missing **")
-        except NameError:
-            print("** class doesn't exist **")
-        new_instance = HBNBCommand.classes[arg_list[0]](**kw)
-        new_instance.save()
-        print(new_instance.id)
+                key_value = arg.split("=")
+                if len(key_value) != 2:
+                    continue  # Skip if format isn't key=value
+                key, value = key_value
+
+                # Process string value
+                if value[0] == '"' and value[-1] == '"':
+                    value = value.strip('"').replace('_', ' ').replace('\\"', '"')
+                # Process numeric values
+                elif '.' in value:
+                    try:
+                        value = float(value)
+                    except ValueError:
+                        continue  # Skip if value isn't a valid float
+                else:
+                    try:
+                        value = int(value)
+                    except ValueError:
+                        continue  # Skip if value isn't a valid integer
+
+                setattr(new_instance, key, value)
+
+            new_instance.save()
+            print(new_instance.id)
+
+        except SyntaxError as e:
+            print(e)
+        except NameError as e:
+            print(e)
+
 
     def help_create(self):
         """ Help information for the create method """
