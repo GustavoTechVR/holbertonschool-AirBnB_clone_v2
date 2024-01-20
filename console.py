@@ -114,23 +114,48 @@ class HBNBCommand(cmd.Cmd):
         pass
 
     def do_create(self, args):
-        """ Create an object of any class"""
-        try:
-            if not args:
-                raise SyntaxError()
-            arg_list = args.split(" ")
-            kw = {}
-            for arg in arg_list[1:]:
-                arg_splited = arg.split("=")
-                arg_splited[1] = eval(arg_splited[1])
-                if type(arg_splited[1]) is str:
-                    arg_splited[1] = arg_splited[1].replace("_", " ").replace('"', '\\"')
-                kw[arg_splited[0]] = arg_splited[1]
-        except SyntaxError:
+        """Create an object of any class with given parameters."""
+        arg_list = args.split()  # Split the arguments by spaces
+
+        if len(arg_list) == 0:
             print("** class name missing **")
-        except NameError:
+            return
+
+        c_name = arg_list[0]  # First argument is the class name
+
+        if c_name not in HBNBCommand.classes:
             print("** class doesn't exist **")
-        new_instance = HBNBCommand.classes[arg_list[0]](**kw)
+            return
+
+        # Create a new instance of the specified class
+        new_instance = HBNBCommand.classes[c_name]()
+
+        # Process additional parameters
+        for param in arg_list[1:]:
+            # Split parameter into key and value
+            if '=' not in param:
+                continue  # Skip if no '=' in parameter
+            key, value = param.split('=', 1)
+
+            # Process string values
+            if value[0] == '"' and value[-1] == '"':
+                value = value.strip('"').replace('_', ' ').replace('\\"', '"')
+            # Process numeric values
+            elif '.' in value:
+                try:
+                    value = float(value)
+                except ValueError:
+                    continue  # Skip if value is not a valid float
+            else:
+                try:
+                    value = int(value)
+                except ValueError:
+                    continue  # Skip if value is not a valid integer
+
+            # Set the attribute if everything is valid
+            setattr(new_instance, key, value)
+
+        # Save the new instance
         new_instance.save()
         print(new_instance.id)
 
