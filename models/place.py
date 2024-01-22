@@ -2,10 +2,22 @@
 """This is the place class"""
 from sqlalchemy.ext.declarative import declarative_base
 from models.base_model import BaseModel, Base
-from sqlalchemy import Column, String, Integer, Float, ForeignKey
+from sqlalchemy import Column, Table, String, Integer, Float, ForeignKey
 from sqlalchemy.orm import relationship
 from os import getenv
 import models
+
+
+place_amenity = Table("place_amenity", Base.metadata,
+                      Column("place_id", String(60),
+                             ForeignKey("places.id"),
+                             primary_key=True,
+                             nullable=False),
+                      Column("amenity_id", String(60),
+                             ForeignKey("amenities.id"),
+                             primary_key=True,
+                             nullable=False))
+
 
 class Place(BaseModel, Base):
     """This is the class for Place
@@ -14,11 +26,11 @@ class Place(BaseModel, Base):
         user_id: user id
         name: name input
         description: string of description
-        number_rooms: number of rooms in int
+        number_rooms: number of room in int
         number_bathrooms: number of bathrooms in int
         max_guest: maximum guest in int
-        price_by_night: price for a stay in int
-        latitude: latitude in float
+        price_by_night:: pice for a staying in int
+        latitude: latitude in flaot
         longitude: longitude in float
         amenity_ids: list of Amenity ids
     """
@@ -69,4 +81,3 @@ class Place(BaseModel, Base):
             """ Appends amenity ids to the attribute """
             if type(obj) is Amenity and obj.id not in self.amenity_ids:
                 self.amenity_ids.append(obj.id)
-
