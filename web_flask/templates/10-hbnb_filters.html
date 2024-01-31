@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="AirBnB Clone - Web Static" />
+    <link rel="icon" type="image/icon" href="{{ url_for('static', filename='images/icon.png') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/4-common.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/3-header.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/3-footer.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/6-filters.css') }}" />
+    <title>AirBnb Clone</title>
+</head>
+
+<body>
+    <!-- Header Section -->
+    <header>
+        <!-- Header Content Goes Here -->
+    </header>
+    <!-- End Header Section -->
+
+    <!-- Container -->
+    <div class="container">
+        <!-- Filter Section -->
+        <section class="filters">
+            <!-- Locations -->
+            <div class="locations">
+                <h3>States</h3>
+                <div class="popover">
+                    {% for state in states %}
+                        <h2>{{ state.name }}</h2>
+                        <ul>
+                            {% for city in state.cities %}
+                                <li>{{ city.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endfor %}
+                </div>
+                <H4>&nbsp;</H4>
+            </div>
+            <!-- End Locations -->
+
+            <!-- Amenities -->
+            <div class="amenities">
+                <h3>Amenities</h3>
+                <ul class="popover">
+                    {% for amenity in amenities %}
+                        <li>{{ amenity.name }}</li>
+                    {% endfor %}
+                </ul>
+                <H4>&nbsp;</H4>
+            </div>
+            <!-- End Amenities -->
+
+            <!-- Search -->
+            <button class="search-btn">Search</button>
+            <!-- End Search -->
+        </section>
+        <!-- End Filter Section -->
+    </div>
+    <!-- End Container -->
+
+    <!-- Footer Section -->
+    <footer>Holberton School</footer>
+    <!-- End Footer Section -->
+</body>
+
+</html>
