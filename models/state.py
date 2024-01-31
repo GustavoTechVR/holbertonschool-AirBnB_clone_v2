@@ -37,3 +37,20 @@ class State(BaseModel, Base):
             if elem.state_id == self.id:
                 result.append(elem)
         return result
+    
+    @property
+    def cities(self):
+        """Getter for cities related to the state""" 
+        if os.getenv('HBNB_TYPE_STORAGE') != 'db':
+            var = models.storage.all()
+            lista = []
+            result = []
+            for key in var:
+                city = key.replace('.', ' ')
+                city = shlex.split(city) 
+                if city[0] == 'City':
+                    lista.append(var[key])
+            for elem in lista:
+                if elem.state_id == self.id:
+                    result.append(elem)
+            return result
